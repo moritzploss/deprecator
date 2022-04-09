@@ -32,9 +32,9 @@ and the `complete` time (100 %). For rejected requests, `status`, `body` and
       "github_com/moritzploss/deprecator": {
         "start": "2022-04-10T00:00:00+00:00",
         "complete": "2022-04-17T00:00:00+00:00",
-        "status": 301,
-        "body": { "error": "endpoint /user/v1 is deprecated. use /user/v2 instead." },
-        "headers": { "Location": "https://myapi.com/user/v2" }
+        "status": 410,
+        "body": { "error": "endpoint /user/v1 is deprecated" },
+        "headers": { "Link": "https://myapi.com/api/spec" }
       }
     }
   }
@@ -42,4 +42,5 @@ and the `complete` time (100 %). For rejected requests, `status`, `body` and
 ```
 
 The calculation of the rejection probability is stateless and evaluated in
-isolation for each incoming request.
+isolation for each incoming request. `Deprecation` and `Sunset` headers are
+set for all responses, both for rejected and accepted requests.
