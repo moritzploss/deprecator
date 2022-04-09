@@ -46,12 +46,12 @@ func HandlerFactory(next krakendgin.HandlerFactory) krakendgin.HandlerFactory {
 		}
 
 		shouldReject := RejectorFactory(cfg)
-		completeStr := cfg.Complete.String()
+		startStr := cfg.Start.String()
 
 		// runs when request is executed
 		return func(c *gin.Context) {
 			c.Writer.Header().Set("Deprecation", "true")
-			c.Writer.Header().Set("Sunset", completeStr)
+			c.Writer.Header().Set("Sunset", startStr)
 
 			if shouldReject(c) {
 				for key, val := range cfg.Headers {
