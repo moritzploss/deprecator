@@ -12,11 +12,11 @@ handlerFactory = deprecator.HandlerFactory(handlerFactory)
 
 ## Quick Start
 
-With the following `extra_config`, `krakend` will reject requests to the
+With the following `extra_config`, KrakenD will reject requests to the
 `/user/v1` endpoint starting at midnight on 2022-04-10. The probability
-of a request beeing rejected increases linearly between `start` (0 %) and
-`complete` (100 %). For rejected requests, `status`, `body` and `headers` are
-set as specified.
+of a request beeing rejected increases linearly between the `start` time (0 %)
+and the `complete` time (100 %). For rejected requests, `status`, `body` and
+`headers` are set as specified.
 
 ```json
 "endpoints": [
