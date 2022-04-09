@@ -1,10 +1,10 @@
 # Deprecator
 
-`krakend` middleware for deprecating endpoints.
+KrakenD middleware for deprecating endpoints.
 
 ## Installation
 
-Load the middleware as part of the [`krakend` handler factory chain](https://github.com/devopsfaith/krakend-ce/blob/master/handler_factory.go):
+Load the middleware as part of the [KrakenD handler factory chain](https://github.com/devopsfaith/krakend-ce/blob/master/handler_factory.go):
 
 ```go
 handlerFactory = deprecator.HandlerFactory(handlerFactory)
@@ -14,8 +14,8 @@ handlerFactory = deprecator.HandlerFactory(handlerFactory)
 
 With the following `extra_config`, `krakend` will reject requests to the
 `/user/v1` endpoint starting at midnight on 2022-04-10. The probability
-of a request beeing rejected increases linearly between 2022-04-10 (0 %) and
-2022-04-17 (100 %). For rejected requests, `status`, `body` and `headers` are
+of a request beeing rejected increases linearly between `start` (0 %) and
+`complete` (100 %). For rejected requests, `status`, `body` and `headers` are
 set as specified.
 
 ```json
