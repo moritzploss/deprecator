@@ -1,6 +1,6 @@
 # Deprecator
 
-`krakend` middleware to deprecate endpoints.
+`krakend` middleware to for deprecating endpoints.
 
 ## Installation
 
