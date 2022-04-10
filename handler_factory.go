@@ -17,10 +17,7 @@ func HeadsUpFactory(cfg *Config) func(t time.Time) bool {
 		startHeadsUp := date
 		endHeadsUp := startHeadsUp.Add(cfg.HeadsUp.Duration.Duration)
 		isHeadsUp[i] = func(t time.Time) bool {
-			if startHeadsUp.Before(t) && endHeadsUp.After(t) {
-				return true
-			}
-			return false
+			return startHeadsUp.Before(t) && endHeadsUp.After(t)
 		}
 	}
 	return func(t time.Time) bool {
@@ -35,16 +32,12 @@ func HeadsUpFactory(cfg *Config) func(t time.Time) bool {
 
 func RejectorFactory(cfg *Config) Rejector {
 	isHeadsUp := HeadsUpFactory(cfg)
-
 	return func(c *gin.Context) bool {
 		currentTime := time.Now()
 		if isHeadsUp(currentTime) {
 			return true
 		}
-		if currentTime.Before(cfg.Deprecate) {
-			return false
-		}
-		return true
+		return cfg.Deprecate.Before(currentTime)
 	}
 }
 
