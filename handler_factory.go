@@ -14,9 +14,10 @@ type Rejector func(c *gin.Context) bool
 func HeadsUpFactory(cfg *Config) func(t time.Time) bool {
 	isHeadsUp := make([]func(t time.Time) bool, len(cfg.HeadsUp.Dates))
 	for i, date := range cfg.HeadsUp.Dates {
-		d := date // don't use loop var in func closure
+		startHeadsUp := date
+		endHeadsUp := startHeadsUp.Add(cfg.HeadsUp.Duration.Duration)
 		isHeadsUp[i] = func(t time.Time) bool {
-			if d.Before(t) && t.Before(d.Add(cfg.HeadsUp.Duration.Duration)) {
+			if startHeadsUp.Before(t) && endHeadsUp.After(t) {
 				return true
 			}
 			return false
