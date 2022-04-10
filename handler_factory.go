@@ -1,7 +1,6 @@
 package deprecator
 
 import (
-	"math/rand"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -12,23 +11,36 @@ import (
 
 type Rejector func(c *gin.Context) bool
 
+func HeadsUpFactory(cfg *Config) func(t time.Time) bool {
+	isHeadsUp := make([]func(t time.Time) bool, len(cfg.HeadsUp.Dates))
+	for i, date := range cfg.HeadsUp.Dates {
+		d := date // don't use loop var in func closure
+		isHeadsUp[i] = func(t time.Time) bool {
+			if d.Before(t) && t.Before(d.Add(cfg.HeadsUp.Duration.Duration)) {
+				return true
+			}
+			return false
+		}
+	}
+	return func(t time.Time) bool {
+		for i := range isHeadsUp {
+			if isHeadsUp[i](t) {
+				return true
+			}
+		}
+		return false
+	}
+}
+
 func RejectorFactory(cfg *Config) Rejector {
-	deprecationWindow := cfg.Complete.Sub(cfg.Start).Milliseconds()
+	isHeadsUp := HeadsUpFactory(cfg)
 
 	return func(c *gin.Context) bool {
 		currentTime := time.Now()
-		if currentTime.Before(cfg.Start) {
-			return false
-		}
-		if cfg.Complete.Before(currentTime) {
+		if isHeadsUp(currentTime) {
 			return true
 		}
-		if deprecationWindow == 0 && cfg.Start.Before(currentTime) {
-			return true
-		}
-		sinceStart := currentTime.Sub(cfg.Start).Milliseconds()
-		rejectRate := float64(sinceStart) / float64(deprecationWindow)
-		if rand.Float64() > rejectRate { //nolint
+		if currentTime.Before(cfg.Deprecate) {
 			return false
 		}
 		return true
@@ -46,18 +58,18 @@ func HandlerFactory(next krakendgin.HandlerFactory) krakendgin.HandlerFactory {
 		}
 
 		shouldReject := RejectorFactory(cfg)
-		startStr := cfg.Start.String()
+		sunset := cfg.Sunset.String()
 
 		// runs when request is executed
 		return func(c *gin.Context) {
 			c.Writer.Header().Set("Deprecation", "true")
-			c.Writer.Header().Set("Sunset", startStr)
+			c.Writer.Header().Set("Sunset", sunset)
 
 			if shouldReject(c) {
-				for key, val := range cfg.Headers {
+				for key, val := range cfg.Response.Headers {
 					c.Writer.Header().Add(key, val)
 				}
-				c.AbortWithStatusJSON(cfg.Status, cfg.Body)
+				c.AbortWithStatusJSON(cfg.Response.Status, cfg.Response.Body)
 				return
 			}
 

@@ -8,12 +8,22 @@ import (
 	"github.com/luraproject/lura/config"
 )
 
+type Response struct {
+	Status  int                    `json:"status"`
+	Body    map[string]interface{} `json:"body"`
+	Headers map[string]string      `json:"headers"`
+}
+
+type HeadsUp struct {
+	Duration Duration    `json:"duration"`
+	Dates    []time.Time `json:"dates"`
+}
+
 type Config struct {
-	Start    time.Time              `json:"start"`
-	Complete time.Time              `json:"complete"`
-	Status   int                    `json:"status"`
-	Body     map[string]interface{} `json:"body"`
-	Headers  map[string]string      `json:"headers"`
+	Sunset    time.Time `json:"sunset"`
+	Deprecate time.Time `json:"deprecate"`
+	HeadsUp   HeadsUp   `json:"heads_up"`
+	Response  Response  `json:"response"`
 }
 
 const Namespace = "github_com/moritzploss/deprecator"
@@ -33,10 +43,10 @@ func ConfigGetter(e config.ExtraConfig) (*Config, bool) {
 	if err := json.NewDecoder(buf).Decode(cfg); err != nil {
 		panic("[deprecator]: Error: failed to parse config")
 	}
-	if cfg.Complete.Before(cfg.Start) {
-		panic("[deprecator]: Error: time `start` greater than time `complete`")
+	if cfg.Deprecate.Before(cfg.Sunset) {
+		panic("[deprecator]: Error: time `sunset` greater than time `deprecate`")
 	}
-	if _, ok := json.Marshal(cfg.Body); ok != nil {
+	if _, ok := json.Marshal(cfg.Response.Body); ok != nil {
 		panic("[deprecator]: Error: cannot parse response body. Invalid JSON.")
 	}
 
