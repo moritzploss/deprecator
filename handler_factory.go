@@ -4,9 +4,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/luraproject/lura/config"
-	"github.com/luraproject/lura/proxy"
-	krakendgin "github.com/luraproject/lura/router/gin"
+	"github.com/luraproject/lura/v2/config"
+	"github.com/luraproject/lura/v2/proxy"
+	krakendgin "github.com/luraproject/lura/v2/router/gin"
 )
 
 type Rejector func(c *gin.Context) bool
@@ -34,10 +34,7 @@ func RejectorFactory(cfg *Config) Rejector {
 	isHeadsUp := HeadsUpFactory(cfg)
 	return func(c *gin.Context) bool {
 		currentTime := time.Now()
-		if isHeadsUp(currentTime) {
-			return true
-		}
-		return cfg.Deprecate.Before(currentTime)
+		return isHeadsUp(currentTime) || cfg.Deprecate.Before(currentTime)
 	}
 }
 
