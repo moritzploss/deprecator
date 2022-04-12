@@ -26,7 +26,7 @@ type Config struct {
 	Response  Response  `json:"response"`
 }
 
-const Namespace = "github_com/moritzploss/deprecator"
+const Namespace = "moritzploss/deprecator"
 
 func ConfigGetter(e config.ExtraConfig) (*Config, bool) {
 	cfg := new(Config)

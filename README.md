@@ -34,7 +34,7 @@ will reject all requests prior to its actual deprecation.
       "encoding": "no-op"
     }],
     "extra_config": {
-      "github_com/moritzploss/deprecator": {
+      "moritzploss/deprecator": {
         "sunset": "2022-04-07T08:00:00+00:00",
         "deprecate": "2022-04-10T08:00:00+00:00",
         "heads_up": {
